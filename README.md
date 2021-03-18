@@ -1,19 +1,22 @@
-# Rust Latam: procedural macros workshop
+# Rust Latam: 手続きマクロワークショップ
 
-*This repo contains a selection of projects designed to learn to write Rust
-procedural macros &mdash; Rust code that generates Rust code.*
+*Rustの手続きマクロ（コードを生成するコード）の学習用にデザインされたプロジェクトです。*
 
-*Each of these projects is drawn closely from a compelling real use case. Out of
-the 5 projects here, 3 are macros that I have personally implemented in
-industrial codebases for work, and the other 2 exist as libraries on crates.io
-by other authors.*
+*このリポジトリは[dtolnay/proc-macro-workshop]の抄訳版です。全ての権利はオリジナルの
+作者に帰属します。*
+
+[dtolnay/proc-macro-workshop]: https://github.com/dtolnay/proc-macro-workshop
+
+*ここにあるプロジェクトはどれも、実際の用例に則した実用的なものです。5つのプロジェクトの
+うち3つはオリジナルの作者でdtolnay氏が業務のために作成した物で、後の2つは別な方が作成した
+crate.ioにも登録されているライブラリです。*
 
 <br>
 
-## Contents
+## コンテンツ
 
-- [**Suggested prerequisites**](#suggested-prerequisites)
-- [**Projects**](#projects) — Introduction to each of the projects
+- [**推奨される前提知識**](#推奨される前提知識)
+- [**プロジェクト**](#プロジェクト) — それぞれのプロジェクトの紹介
   - [**Derive macro:** `derive(Builder)`](#derive-macro-derivebuilder)
   - [**Derive macro:** `derive(CustomDebug)`](#derive-macro-derivecustomdebug)
   - [**Function-like macro:** `seq!`](#function-like-macro-seq)
@@ -27,25 +30,21 @@ by other authors.*
 
 <br>
 
-## Suggested prerequisites
+## 推奨される前提知識
 
-This workshop covers attribute macros, derive macros, and function-like
-procedural macros.
+このワークショップでは属性マクロ、deriveマクロ、関数風マクロを扱います。
 
-Be aware that the content of the workshop and the explanations in this repo will
-assume a working understanding of structs, enums, traits, trait impls, generic
-parameters, and trait bounds. You are welcome to dive into the workshop with any
-level of experience with Rust, but you may find that these basics are far easier
-to learn for the first time outside of the context of macros.
+プロジェクト内のコンテンツや解説は全て、Rustの構造体、列挙体、トレイト、トレイト実装、ジェネリックなパラメータ、およびトレイト境界に関する知識を前提としています。
+それらの知識が無い方でもワークショップに取り組んでいただくことは可能ですが、マクロそのものよりも上に挙げた知識の方が遙かに容易に習得出来ることはすぐにお分かりいただ
+けるでしょう。
 
 <br>
 
-## Projects
+## プロジェクト
 
-Here is an introduction to each of the projects. At the bottom, I give
-recommendations for what order to tackle them based on your interests. Note that
-each of these projects goes into more depth than what is described in the
-introduction here.
+ここではそれぞれのプロジェクトについて紹介した後、最後にプロジェクトに取り組む順番
+について皆さんの興味に基づいたお勧めのやり方を述べます。各プロジェクトはここで紹介
+する以上の深い内容を含んでいることに留意して下さい。
 
 ### Derive macro: `derive(Builder)`
 
