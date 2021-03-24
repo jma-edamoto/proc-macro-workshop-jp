@@ -1,5 +1,6 @@
-// This test case should be a freebie if the previous ones are already working.
-// It shows that we can chain method calls on the builder.
+// ここまでの実装が正しく出来ていれば、このテストは自動的に通過します
+// このテストは、ビルダーに対してメソッドチェーンの呼び出しが行えることを
+// 確認しています。
 
 use derive_builder::Builder;
 

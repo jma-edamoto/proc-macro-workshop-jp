@@ -1,17 +1,15 @@
-// Ensure that your macro reports a reasonable error message when the caller
-// mistypes the inert attribute in various ways. This is a compile_fail test.
+// ユーザーが属性の綴りを間違えた場合に、マクロが適切なエラーを返すことを確認してください。
+// これは、コンパイル失敗のテストです。 
 //
-// The preferred way to report an error from a procedural macro is by including
-// an invocation of the standard library's compile_error macro in the code
-// emitted by the procedural macro.
+// 手続きマクロでエラーを返すのに推奨される方法は、マクロが生成するコードの中で標準ライブラリ
+// のcompile_errorマクロを呼び出すことです。
 //
+// 参考資料:
 //
-// Resources:
-//
-//   - The compile_error macro for emitting basic custom errors:
+//   - 簡単なカスタムエラーを出力するcompile_errorマクロ:
 //     https://doc.rust-lang.org/std/macro.compile_error.html
 //
-//   - Lowering a syn::Error into an invocation of compile_error:
+//   - syn::Errorをcompile_errorの呼び出しに変換する方法:
 //     https://docs.rs/syn/1.0/syn/struct.Error.html#method.to_compile_error
 
 use derive_builder::Builder;

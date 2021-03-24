@@ -1,31 +1,25 @@
-// The std::process::Command builder handles args in a way that is potentially
-// more convenient than passing a full vector of args to the builder all at
-// once.
+// 標準ライブラリのstd::process::Commandビルダーは、argsメソッドによってベクターを
+// を丸ごと引数に取るだけではなく、もう少し便利な方法で引数を受け取ることができます。
 //
-// Look for a field attribute #[builder(each = "...")] on each field. The
-// generated code may assume that fields with this attribute have the type Vec
-// and should use the word given in the string literal as the name for the
-// corresponding builder method which accepts one vector element at a time.
+// マクロを修正して、それぞれのフィールドについて#[builder(each = "...")]という属性の
+// 有無を判定し、その属性を持つフィールドに対しては型がVecであることを仮定して、属性の
+// 中で与えられた単語をメソッド名としてVecに1つずつ要素を追加できるようにして下さい。
 //
-// In order for the compiler to know that these builder attributes are
-// associated with your macro, they must be declared at the entry point of the
-// derive macro. Otherwise the compiler will report them as unrecognized
-// attributes and refuse to compile the caller's code.
+// あなたのマクロが"builder"という属性を利用することをコンパイラに示すために、deriveマクロ
+// の最初でそのことを宣言する必要があります。さもないと、コンパイラは認識されない属性値
+// ということでエラーを返します。
 //
 //     #[proc_macro_derive(Builder, attributes(builder))]
 //
-// These are called inert attributes. The word "inert" indicates that these
-// attributes do not correspond to a macro invocation on their own; they are
-// simply looked at by other macro invocations.
+// これらの属性はinert attributes(不活性な属性)と呼ばれます. 「不活性」という言葉はこの属性が
+// マクロ呼び出しとは対応せず、別なマクロ呼び出しの中で利用されることを示しています。
+//　
+// なお、もしこの「1つずつ要素を追加する」メソッドがフィールドと同じ名前で与えられた場合、
+// 通常の「ベクターを丸ごと引数に取る」メソッドは生成しないようにしないと名前の衝突が発生します。
 //
-// If the new one-at-a-time builder method is given the same name as the field,
-// avoid generating an all-at-once builder method for that field because the
-// names would conflict.
+// 参考資料:
 //
-//
-// Resources:
-//
-//   - Relevant syntax tree types:
+//   - 関連する構文木:
 //     https://docs.rs/syn/1.0/syn/struct.Attribute.html
 //     https://docs.rs/syn/1.0/syn/enum.Meta.html
 

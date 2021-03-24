@@ -1,9 +1,9 @@
-// Generate a `build` method to go from builder to original struct.
+// ビルダーから元の構造体を返すbuildメソッドを生成して下さい.
 //
-// This method should require that every one of the fields has been explicitly
-// set; it should return an error if a field is missing. The precise error type
-// is not important. Consider using Box<dyn Error>, which you can construct
-// using the impl From<String> for Box<dyn Error>.
+// このメソッドは構造体の全てのフィールドに値がセットされていることを要求します。
+// 値がセットされていないフィールドがある場合にはエラーを返す必要があります。
+// エラーの型は重要ではありませんので、Box<dyn Error>のFrom<String>インプリメ
+// ンテーションを利用して下さい。
 //
 //     impl CommandBuilder {
 //         pub fn build(&mut self) -> Result<Command, Box<dyn Error>> {

@@ -1,35 +1,28 @@
-// Some fields may not always need to be specified. Typically these would be
-// represented as Option<T> in the struct being built.
+// フィールドの中には、値がセットされている必要がないものがあります。
+// 元の構造体のフィールドがOption<T>で表現されている場合がそれです。
 //
-// Have your macro identify fields in the macro input whose type is Option and
-// make the corresponding builder method optional for the caller. In the test
-// case below, current_dir is optional and not passed to one of the builders in
-// main.
+// 与えられた構造体のフィールドがOption型を持っているかを識別し、対応するbuilder
+// メソッドがoptionalになるようマクロを修正して下さい。今回のテストではcurrent_dir
+// がOption型を持っているためこのままではテストを通過出来ません。
 //
-// Be aware that the Rust compiler performs name resolution only after macro
-// expansion has finished completely. That means during the evaluation of a
-// procedural macro, "types" do not exist yet, only tokens. In general many
-// different token representations may end up referring to the same type: for
-// example `Option<T>` and `std::option::Option<T>` and `<Vec<Option<T>> as
-// IntoIterator>::Item` are all different names for the same type. Conversely,
-// a single token representation may end up referring to many different types in
-// different places; for example the meaning of `Error` will depend on whether
-// the surrounding scope has imported std::error::Error or std::io::Error. As a
-// consequence, it isn't possible in general for a macro to compare two token
-// representations and tell whether they refer to the same type.
+// ラストのコンパイラはマクロが完全に展開された後で名前解決を行うことに注意して下さい。
+// 言い換えると、手続きマクロを処理している途中では"型"は存在せず、構文木のトークンだ
+// けが存在しています。一般的に、多くの異なるトークン表現が最終的には同じ型を表します。
+// 例えば、"Option<T>"と"std::option::Option<T>"と"<Vec<Option<T>> as IntoIterator>::Item"
+// はいずれも異なる名前の同じ型です。逆に、同じトークンであっても出現する場所によっては
+// 異なる型を表す場合があります。例えば、"Error"の意味はそれを取り囲むスコープでインポートされて
+// いるのがstd::error::Errorかstd::io::Errorかに依存します。ですので、一般論として
+// 二つのトークン表現が同じ型を意味しているか否かをマクロ自身が判定することは不可能です。
 //
-// In the context of the current test case, all of this means that there isn't
-// some compiler representation of Option that our macro can compare fields
-// against to find out whether they refer to the eventual Option type after name
-// resolution. Instead all we get to look at are the tokens of how the user has
-// described the type in their code. By necessity, the macro will look for
-// fields whose type is written literally as Option<...> and will not realize
-// when the same type has been written in some different way.
+// 今回のテストで言うと、この事実は「あるフィールドが名前解決の後で最終的にOptional型に
+// なるかをマクロが判定出来るようなコンパイル表現は存在しない」ということを意味します。
+// 我々が得られるのはユーザーがコードの中で型を記述するのに用いたトークンだけです。
+// 必然的に、マクロは型が"Option<...>"という文字列で書かれたフィールドを探すことになり、
+// Option型が違う方法で記述されている場合にはその存在に気付かない可能性があります。
 //
-// The syntax tree for types parsed from tokens is somewhat complicated because
-// there is such a large variety of type syntax in Rust, so here is the nested
-// data structure representation that your macro will want to identify:
-//
+// Rustが多様な文法を備えているために、トークンからパースされた構文木はやや複雑な構造を
+// 持っています。マクロが判定する必要があるデータは以下のような入れ子構造のものになります。
+// 
 //     Type::Path(
 //         TypePath {
 //             qself: None,

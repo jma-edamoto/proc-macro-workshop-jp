@@ -1,5 +1,4 @@
-// Generate methods on the builder for setting a value of each of the struct
-// fields.
+// 構造体のそれぞれのフィールドに値をセットするメソッドを生成して下さい。
 //
 //     impl CommandBuilder {
 //         fn executable(&mut self, executable: String) -> &mut Self {

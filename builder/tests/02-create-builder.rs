@@ -1,17 +1,17 @@
-// Have the macro produce a struct for the builder state, and a `builder`
-// function that creates an empty instance of the builder.
+// マクロにビルダーの状態を保持する構造体と、ビルダーの空のインスタンスを返すbuilder関数
+// を生成させて下さい。
 //
-// As a quick start, try generating the following code (but make sure the type
-// name matches what is in the caller's input).
+// 一番簡単な方法は、次のコードを生成することです（ただし、この型名は呼び出し元から
+// 与えられた入力に一致する必要があります）
 //
 //     impl Command {
 //         pub fn builder() {}
 //     }
 //
-// At this point the test should pass because it isn't doing anything with the
-// builder yet, so `()` as the builder type is as good as any other.
+// この時点ではビルダーに対して何の操作も行っていないため、ビルダーの型として'()'を返す
+// この関数はテストをクリアします。
 //
-// Before moving on, have the macro also generate:
+// 次のテストに進む前に、マクロに以下の構造体を生成させて下さい:
 //
 //     pub struct CommandBuilder {
 //         executable: Option<String>,
@@ -20,7 +20,7 @@
 //         current_dir: Option<String>,
 //     }
 //
-// and in the `builder` function:
+// また、builder関数として以下のコードを生成するように修正して下さい:
 //
 //     impl Command {
 //         pub fn builder() -> CommandBuilder {
@@ -34,12 +34,12 @@
 //     }
 //
 //
-// Resources:
+// 参考資料:
 //
-//   - The Quote crate for putting together output from a macro:
+//   - マクロの出力をまとめるQuoteクレート:
 //     https://github.com/dtolnay/quote
 //
-//   - Joining together the type name + "Builder" to make the builder's name:
+//   - 入力の型名と"Builder"を結合してビルダーの型名を作る方法:
 //     https://docs.rs/syn/1.0/syn/struct.Ident.html
 
 use derive_builder::Builder;
