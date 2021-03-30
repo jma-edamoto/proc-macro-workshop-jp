@@ -25,8 +25,8 @@ crate.ioにも登録されているライブラリです。*
   - [**Project recommendations**](#project-recommendations) — What to work on
     depending on your interests
 - [**Test harness**](#test-harness) — Explanation of how testing is set up
-- [**Workflow**](#workflow) — Recommended way to work through the workshop
-- [**Debugging tips**](#debugging-tips)
+- [**作業の手順**](#作業の手順) — Recommended way to work through the workshop
+- [**デバッグに関するtips**](#デバッグに関するtips)
 
 <br>
 
@@ -355,28 +355,14 @@ macro, and testing that those errors are as expected.
 
 <br>
 
-## Workflow
+## 作業の手順
 
-Every project has a test suite already written under its <kbd>tests</kbd>
-directory. (But feel free to add more tests, remove tests for functionality you
-don't want to implement, or modify tests as you see fit to align with your
-implementation.)
+５つのプロジェクトにはそれぞれ<kbd>tests</kbd>ディレクトリ内にテストスートが一式用意されています（テストの追加や削除、あなたの実装に合わせたテストの変更等は自由に行って下さい）。各プロジェクトのトップのディレクトリ内で`cargo test`を実行し、テストを走らせて下さい。
 
-Run `cargo test` inside any of the 5 top-level project directories to run the
-test suite for that project.
+全てのプロジェクトは、テストを全て無効にした状態からスタートします。*tests/progress.rs*を開いてテスト項目を１つずつ有効にし、それを通過するように実装を行うことを繰り返して下さい。**それぞれのテストファイル（例えば*tests/01-parse.rs*）には
+今からテストしようとしている機能と、それを実装するためのTipsがコメントで記載されています。**テストの番号順に、１つずつ作業を進めることを推奨します。
 
-Initially every projects starts with all of its tests disabled. Open up the
-project's *tests/progress.rs* file and enable tests one at a time as you work
-through the implementation. **The test files (for example *tests/01-parse.rs*)
-each contain a comment explaining what functionality is tested and giving some
-tips for how to implement it.** I recommend working through tests in numbered
-order, each time enabling one more test and getting it passing before moving on.
-
-Tests come in two flavors: tests that should compile+run successfully, and tests
-that should fail to compile with a specific error message.
-
-If a test should compile and run successfully, but fails, the test runner will
-surface the compiler error or runtime error output.
+テストには正しくコンパイル出来て動作することを確認するためのものと、コンパイルに失敗し適切なエラーメッセージを返すことを確認するためのものの２種類があります。もし正しくコンパイル出来て動作すべきテストが失敗すれば、テストランナーはコンパイルエラーかランタイムエラーを返します。
 
 <p align="center">
 <a href="#workflow">
@@ -384,13 +370,8 @@ surface the compiler error or runtime error output.
 </a>
 </p>
 
-For tests that should fail to compile, we compare the compilation output against
-a file of expected errors for that test. If those errors match, the test is
-considered to pass. If they do not match, the test runner will surface the
-expected and actual output.
-
-Expected output goes in a file with the same name as the test except with an
-extension of _*.stderr_ instead of _*.rs_.
+コンパイルの失敗を確認するテストの場合には、期待されるエラーメッセージを記したファイルをコンパイラの出力結果と比較します。両者が一致すればテストは通過したと判断されます。一致しない場合、テストランナーは期待されるエラーメッセージと実際の出力を返します。
+期待されるエラーが書かれたファイルは、対応するテストのファイル名の拡張子を _*.rs_. から _*.stderr_　に変えた物になります。
 
 <p align="center">
 <a href="#workflow">
@@ -398,12 +379,7 @@ extension of _*.stderr_ instead of _*.rs_.
 </a>
 </p>
 
-If there is no _*.stderr_ file for a test that is supposed to fail to compile,
-the test runner will save the compiler's output into a directory called
-<kbd>wip</kbd> adjacent to the <kbd>tests</kbd> directory. So the way to update
-the "expected" output is to delete the existing _*.stderr_ file, run the tests
-again so that the output is written to *wip*, and then move the new output from
-*wip* to *tests*.
+コンパイルに失敗することを期待するテストに _*.stderr_ ファイルが用意されていない場合、テストランナーはコンパイラの出力を<kbd>tests</kbd>ディレクトリと同じ階層の<kbd>wip</kbd>というディレクトリに保存します。ですので _*.stderr_ ファイルを更新する場合は一度ファイルを削除したあとでテストを実行し、*wip*ディレクトリに出力された新しい _*.stderr_ ファイルを*tests*に移動してください。
 
 <p align="center">
 <a href="#workflow">
@@ -413,40 +389,26 @@ again so that the output is written to *wip*, and then move the new output from
 
 <br>
 
-## Debugging tips
+## デバッグに関するtips
 
-To look at what code a macro is expanding into, install the [cargo expand] Cargo
-subcommand and then run `cargo expand` in the repository root (outside of any of
-the project directories) to expand the main.rs file in that directory. You can
-copy any of the test cases into this main.rs and tweak it as you iterate on the
-macro.
+マクロが生成したコードを確認するには[cargo expand]をインストールし、このリポジトリのルート（各プロジェクトのディレクトリの一つ上）で`cargo expand`を実行してmain.rsを展開します。このmain.rsにテストの内容をコピーして調整を行って下さい。
 
 [cargo expand]: https://github.com/dtolnay/cargo-expand
 
-If a macro is emitting syntactically invalid code (not just code that fails
-type-checking) then cargo expand will not be able to show it. Instead have the
-macro print its generated TokenStream to stderr before returning the tokens.
+マクロが文法的に誤ったコード（変数型の問題とは限りません）を生成する場合には、cargo expandでコードを確認することが出来ません。代わりに、マクロがトークンストリームを返す前にその内容を標準エラーに出力させて下さい。
 
 ```rust
 eprintln!("TOKENS: {}", tokens);
 ```
 
-Then a `cargo check` in the repository root (if you are iterating using main.rs)
-or `cargo test` in the corresponding project directory will display this output
-during macro expansion.
-
-Stderr is also a helpful way to see the structure of the syntax tree that gets
-parsed from the input of the macro.
+`cargo test`（main.rsを利用している場合には`cargo check`）を実行すると、コンパイラはマクロを展開する間にこの内容を表示してくれます。Stderr はマクロが入力からパースした構文木の構造を確認するのに便利な方法です。
 
 ```rust
 eprintln!("INPUT: {:#?}", syntax_tree);
 ```
 
-Note that in order for Syn's syntax tree types to provide Debug impls, you will
-need to set `features = ["extra-traits"]` on the dependency on Syn. This is
-because adding hundreds of Debug impls adds an appreciable amount of compile
-time to Syn, and we really only need this enabled while doing development on a
-macro rather than when the finished macro is published to users.
+Synの構文木をデバッグ出力するためには、Synの依存関係として`features = ["extra-traits"]`をセットする必要があります。これは数百のデバッグ用実装をSynに追加するには相応のコンパイル時間が必要で、それはマクロの開発時にだけ必要だからです。
+
 
 <br>
 
