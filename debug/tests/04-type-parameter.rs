@@ -1,21 +1,20 @@
-// Figure out what impl needs to be generated for the Debug impl of Field<T>.
-// This will involve adding a trait bound to the T type parameter of the
-// generated impl.
+// Field<T>にDebugをインプリメントするにはどんな実装を生成しなければならないか考えましょう。
+// この実装には型パラメータTのトレイト境界が含まれるはずです。 
 //
-// Callers should be free to instantiate Field<T> with a type parameter T which
-// does not implement Debug, but such a Field<T> will not fulfill the trait
-// bounds of the generated Debug impl and so will not be printable via Debug.
+// マクロの利用者はDebugを実装していないT型を用いて自由にField<T>をインスタンス化することが
+// できるべきです。ただし、そのようなField<T>は生成されたDebug実装のトレイト境界を満たさないため、
+// Debugで出力することはできないでしょう。
 //
 //
-// Resources:
+// 参考資料:
 //
-//   - Representation of generics in the Syn syntax tree:
+//   - Syn構文木におけるジェネリックの表現:
 //     https://docs.rs/syn/1.0/syn/struct.Generics.html
 //
-//   - A helper for placing generics into an impl signature:
+//   - impl文にジェネリックを配置するためのヘルパー:
 //     https://docs.rs/syn/1.0/syn/struct.Generics.html#method.split_for_impl
 //
-//   - Example code from Syn which deals with type parameters:
+//   - Synで型パラメータを扱うサンプルコード:
 //     https://github.com/dtolnay/syn/tree/master/examples/heapsize
 
 use derive_debug::CustomDebug;
