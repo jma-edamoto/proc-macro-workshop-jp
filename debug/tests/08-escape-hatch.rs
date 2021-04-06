@@ -1,24 +1,20 @@
-// There are some cases where no heuristic would be sufficient to infer the
-// right trait bounds based only on the information available during macro
-// expansion.
+// マクロ展開の際に得られる情報からトレイト境界を推論するのに、経験則だけでは不十分な場
+// 合があります。このような場合には属性を利用し、マクロの利用者に正しいトレイト境界を手
+// 書きしてもらうことにします。
 //
-// When this happens, we'll turn to attributes as a way for the caller to
-// handwrite the correct trait bounds themselves.
-//
-// The impl for Wrapper<T> in the code below will need to include the bounds
-// provided in the `debug(bound = "...")` attribute. When such an attribute is
-// present, also disable all inference of bounds so that the macro does not
-// attach its own `T: Debug` inferred bound.
+// 以下のコードにあるWrapper<T>の実装には `debug(bound = "...")` で与えられたトレ
+// イト境界が必要です。このような属性が存在する場合には、同時にトレイト境界に関する全て
+// の推論を中止して本来推論される `T: Debug` の生成を防ぎます。 
 //
 //     impl<T: Trait> Debug for Wrapper<T>
 //     where
 //         T::Value: Debug,
 //     {...}
 //
-// Optionally, though this is not covered by the test suite, also accept
-// `debug(bound = "...")` attributes on individual fields. This should
-// substitute only whatever bounds are inferred based on that field's type,
-// without removing bounds inferred based on the other fields:
+// このテストには含まれていませんが、追加として `debug(bound = "...")` を個々のフィ
+// ールドの属性としても受け入れられるようにしてください。この属性はそれが付与されたフィ
+// ールドの型に対応するトレイト境界だけを代替し、それ以外のフィールドについては型から推
+// 論されるトレイト境界を生成する必要があります。
 //
 //     #[derive(CustomDebug)]
 //     pub struct Wrapper<T: Trait, U> {
