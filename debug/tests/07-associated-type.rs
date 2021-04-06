@@ -1,22 +1,20 @@
-// This test case covers one more heuristic that is often worth incorporating
-// into derive macros that infer trait bounds. Here we look for the use of an
-// associated type of a type parameter.
+// このテストではトレイト境界を推論するderiveマクロでしばしば有用な、もう一つの経験則を
+// 扱います。
 //
-// The generated impl will need to look like:
+// 生成される実装は、このような形になる必要があります:
 //
 //     impl<T: Trait> Debug for Field<T>
 //     where
 //         T::Value: Debug,
 //     {...}
 //
-// You can identify associated types as any syn::TypePath in which the first
-// path segment is one of the type parameters and there is more than one
-// segment.
+// あなたはsyn::TypePathがpath segmentを複数持ち、最初のsegmentが型変数であるような
+// ものを探すことで関連型（associated types）を判別することができます。
 //
 //
-// Resources:
+// 参考資料:
 //
-//   - The relevant types in the input will be represented in this syntax tree
+//   - 関連する型は入力の中では以下の構文木で表される：
 //     node: https://docs.rs/syn/1.0/syn/struct.TypePath.html
 
 use derive_debug::CustomDebug;
