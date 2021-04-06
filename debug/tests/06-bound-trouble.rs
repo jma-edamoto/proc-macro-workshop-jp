@@ -1,7 +1,5 @@
-// This test case should not require any code change in your macro if you have
-// everything up to this point already passing, but is here to demonstrate why
-// inferring `#field_ty: Trait` bounds as mentioned in the previous test case is
-// not viable.
+// ここまでの実装によっては、このテストにコードの変更は必要ないかもしれません。ここでは、前
+// のテストで言及した`#field_ty: Trait`というトレイト境界がなぜ不適切なのかを実演します。
 //
 //     #[derive(CustomDebug)]
 //     pub struct One<T> {
@@ -14,7 +12,7 @@
 //         one: Box<One<T>>,
 //     }
 //
-// The problematic expansion would come out as:
+// 問題のあるコードは以下のように展開されます:
 //
 //     impl<T> Debug for One<T>
 //     where
@@ -27,35 +25,32 @@
 //         Box<One<T>>: Debug,
 //     {...}
 //
-// There are two things wrong here.
+// このコードには２つの問題があります。まず、このコードに関連する `impl<T> Debug for 
+// Option<T> where T: Debug` と `impl<T> Debug for Box<T> where T: ?Sized +Debug`
+// という標準ライブラリの実装を考えると、以下のような循環定義が存在することがわかります。
 //
-// First, taking into account the relevant standard library impls `impl<T> Debug
-// for Option<T> where T: Debug` and `impl<T> Debug for Box<T> where T: ?Sized +
-// Debug`, we have the following cyclic definition:
+//   - One<T>がDebugを実装しているなら、Box<One<T>>もDebugを実装している;
+//   - Box<One<T>>がDebugを実装しているなら、Two<T>もDebugを実装している;
+//   - Two<T>がDebugを実装しているなら、Box<Two<T>>もDebugを実装している;
+//   - Box<Two<T>>がDebugを実装しているなら、Option<Box<Two<T>>>もDebugを実装している;
+//   - Option<Box<Two<T>>>がDebugを実装しているなら、One<T>もDebugを実装している;　循環！
 //
-//   - One<T> implements Debug if there is an impl for Option<Box<Two<T>>>;
-//   - Option<Box<Two<T>>> implements Debug if there is an impl for Box<Two<T>>;
-//   - Box<Two<T>> implements Debug if there is an impl for Two<T>;
-//   - Two<T> implements Debug if there is an impl for Box<One<T>>;
-//   - Box<One<T>> implements Debug if there is an impl for One<T>; cycle!
-//
-// The Rust compiler detects and rejects this cycle by refusing to assume that
-// an impl for any of these types exists out of nowhere. The error manifests as:
+// こういう「どこから現れたのかわからない」型の実装を禁止するために、Rustのコンパイラは循環を
+// 検出して拒否し、以下のようなエラーを返します：
 //
 //     error[E0275]: overflow evaluating the requirement `One<u8>: std::fmt::Debug`
 //      -->
 //       |     assert_debug::<One<u8>>();
 //       |     ^^^^^^^^^^^^^^^^^^^^^^^
 //
-// There is a technique known as co-inductive reasoning that may allow a
-// revamped trait solver in the compiler to process cycles like this in the
-// future, though there is still uncertainty about whether co-inductive
-// semantics would lead to unsoundness in some situations when applied to Rust
-// trait impls. There is no current activity pursuing this but some discussion
-// exists in a GitHub issue called "#[derive] sometimes uses incorrect bounds":
+// 将来的には双帰納推論（co-inductive reasoning）と呼ばれるテクニックを用いてRustコンパイラ
+// のトレイトソルバーがこのような循環を処理できるようになるかもしれませんが、この双帰納性をRust
+// のトレイト実装に適用した際に何らかの不具合が発生する可能性についてはいまだに未知数です。今の
+// ところこの問題に動きはありませんが、Githubには"#[derive] sometimes uses incorrect bounds"
+// というissueが存在しています：
 // https://github.com/rust-lang/rust/issues/26925
 //
-// The second thing wrong is a private-in-public violation:
+// 二つ目の問題は、private-in-public違反です:
 //
 //     error[E0446]: private type `Two<T>` in public interface
 //      -->
@@ -70,10 +65,9 @@
 //       | | }
 //       | |_^ can't leak private type
 //
-// Public APIs in Rust are not allowed to be defined in terms of private types.
-// That includes the argument types and return types of public function
-// signatures, as well as trait bounds on impls of public traits for public
-// types.
+// RustのpublicなAPIはprivateな型を用いて定義することができません。PublicなAPIはpublicな引数型
+// を持ちpublicな関数呼び出しを返しますが、同時にpublicな型に対するpublicなトレイトの実装に含まれる
+// トレイト境界もpublicなものとして返すのです。
 
 use derive_debug::CustomDebug;
 use std::fmt::Debug;
