@@ -1,52 +1,44 @@
-// Some generic types implement Debug even when their type parameters do not.
-// One example is PhantomData which has this impl:
+// いくつかのジェネリック型はその型パラメータがDebugを実装していなくてもそれ自体がDebug
+// を実装している場合があります。一例をあげると、PhantomDataは以下の実装を持ちます：
 //
 //     impl<T: ?Sized> Debug for PhantomData<T> {...}
 //
-// To accomodate this sort of situation, one way would be to generate a trait
-// bound `#field_ty: Debug` for each field type in the input, rather than
-// `#param: Debug` for each generic parameter. For example in the case of the
-// struct Field<T> in the test case below, it would be:
+// こういう状況に対処する一つの方法は、それぞれのジェネリックパラメータに対して`#param: Debug`
+// というトレイト境界を生成する代わりに、それぞれのフィールドに対して`#field_ty: Debug`を生成
+// することです。下のテストにあるField<T>構造体でいうと、このようなコードを生成することになりま
+// す：
 //
 //     impl<T> Debug for Field<T>
 //     where
 //         PhantomData<T>: Debug,
 //     {...}
 //
-// This approach has fatal downsides that will be covered in subsequent test
-// cases.
+// 今後のテストでわかりますが、このアプローチには致命的な欠陥があります。
 //
-// Instead we'll recognize PhantomData as a special case since it is so common,
-// and later provide an escape hatch for the caller to override inferred bounds
-// in other application-specific special cases.
+// その代わりに我々はPhantomDataを十分に広く利用されているものと考えてこれを特例として扱い、
+// その他のアプリケーションに固有の「特例」のためにトレイト境界を上書きする「脱出口」を今後の
+// 別な作業で提供することにします。
 //
-// Concretely, for each type parameter #param in the input, you will need to
-// determine whether it is only ever mentioned inside of a PhantomData and if so
-// then avoid emitting a `#param: Debug` bound on that parameter. For the
-// purpose of the test suite it is sufficient to look for exactly the field type
-// PhantomData<#param>. In reality we may also care about recognizing other
-// possible arrangements like PhantomData<&'a #param> if the semantics of the
-// trait we are deriving would make it likely that callers would end up with
-// that sort of thing in their code.
+// 具体的には、入力に含まれるすべての型パラメータ #param に対してそれぞれがPahtomDataの中で 
+// だけ言及されるものか否かを判定し、そうである場合にはそのパラメータに対するトレイト境界
+// `#param: Debug`の生成を回避します。テストを通過するためにはPhantomData<#param>型の
+// フィールドを探すだけで十分ですが、現実にはマクロの利用者が最終的にたとえばPhantomData
+// <&'a #param>のようなコード片になる何かをコードに配置する可能性にまで気を配る必要があり
+// ます。
 //
-// Notice that we are into the realm of heuristics at this point. In Rust's
-// macro system it is not possible for a derive macro to infer the "correct"
-// bounds in general. Doing so would require name-resolution, i.e. the ability
-// for the macro to look up what trait impl corresponds to some field's type by
-// name. The Rust compiler has chosen to perform all macro expansion fully
-// before name resolution (not counting name resolution of macros themselves,
-// which operates in a more restricted way than Rust name resolution in general
-// to make this possible).
+// 我々が経験則の領域に足を踏み入れたことに留意してください。Rustのマクロシステムはderive
+// マクロの中で正しいトレイト境界を推論することができません。正しい推論を行うためには名前解
+// 決が必要で、それはつまり、マクロがあるフィールドの型にどんなトレイト境界が対応するかを名
+// 前から判定する能力を持つことを意味します。Rustコンパイラは名前解決の前に全てのマクロを展
+// 開することを選択しました（ただし、マクロそれ自体の名前だけは通常より制限された方法で解決
+// されます）。
 //
-// The clean separation between macro expansion and name resolution has huge
-// advantages that outweigh the limitation of not being able to expose type
-// information to procedural macros, so there are no plans to change it. Instead
-// macros rely on domain-specific heuristics and escape hatches to substitute
-// for type information where unavoidable or, more commonly, rely on the Rust
-// trait system to defer the need for name resolution. In particular pay
-// attention to how the derive macro invocation below is able to expand to code
-// that correctly calls String's Debug impl despite having no way to know that
-// the word "S" in its input refers to the type String.
+// このマクロ展開と名前解決の明確な分離には手続きマクロが型に関する情報を扱えないという欠点
+// をはるかに上回る利点があるため、今後も変更される見込みはありません。代替措置として、マク
+// ロは型についての不可欠な情報の代わりにドメインに固有の経験則や「脱出口」を利用するか、よ
+// り一般的には名前解決をRustのトレイトシステムに委譲します。以下のマクロ宣言で入力に含まれ
+// る "S" という単語がString型を表すことを知る手段が存在しないにも関わらず、展開されたコー
+// ドではString型のDebug実装が正しく呼び出される点には特に注意を払ってください。
 
 use derive_debug::CustomDebug;
 use std::fmt::Debug;
