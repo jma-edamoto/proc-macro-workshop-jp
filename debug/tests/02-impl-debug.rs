@@ -1,18 +1,18 @@
-// Emit an implementation of std::fmt::Debug for a basic struct with named
-// fields and no generic type parameters.
+// 名前付きフィールドを持ちジェネリックな型パラメータを持たない基本的な構造体に対して
+// std::fmt::Debugの実装を生成してください。
+
+// deriveマクロの名前は、そのマクロによって実装されるトレイトと無関係であることに留意
+// してください。ここではマクロの名前をCustomDebugとしていますが、それによって生成さ
+// れるのはDebugに対する実装です。慣例として、通常deriveマクロはマクロと同じ名前の
+// トレイトを実装します。
 //
-// Note that there is no enforced relationship between the name of a derive
-// macro and the trait that it implements. Here the macro is named CustomDebug
-// but the trait impls it generates are for Debug. As a convention, typically
-// derive macros implement a trait with the same name as a macro.
 //
+// 参考資料:
 //
-// Resources:
-//
-//   - The Debug trait:
+//   - Debugトレイト:
 //     https://doc.rust-lang.org/std/fmt/trait.Debug.html
 //
-//   - The DebugStruct helper for formatting structs correctly:
+//   - 構造体を正しくフォーマットするDebugStructヘルパー:
 //     https://doc.rust-lang.org/std/fmt/struct.DebugStruct.html
 
 use derive_debug::CustomDebug;
