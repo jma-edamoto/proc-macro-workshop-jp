@@ -1,25 +1,22 @@
-// Look for a field attribute #[debug = "..."] on each field. If present, find a
-// way to format the field according to the format string given by the caller in
-// the attribute.
+// それぞれのフィールドについて#[debug = "..."]というフィールド属性を探し、存在する場合には
+// 属性に与えられたフォーマット文字列に従ってフィールドをフォーマットしてください。
 //
-// In order for the compiler to recognize this inert attribute as associated
-// with your derive macro, it will need to be declared at the entry point of the
-// derive macro.
+// この属性がderiveマクロに関連付けられていることをコンパイラに知らせるために、deriveマクロ
+// のエントリーポイントで宣言する必要があります。
 //
 //     #[proc_macro_derive(CustomDebug, attributes(debug))]
 //
-// These are called inert attributes. The word "inert" indicates that these
-// attributes do not correspond to a macro invocation on their own; they are
-// simply looked at by other macro invocations.
+// この属性は「内部属性」と呼ばれます. 「内部」という言葉はこの属性がそれ自体ではマクロの呼び
+// 出しに対応せず、他のマクロ呼び出しの中で利用されることを示しています。
 //
 //
-// Resources:
+// 参考資料
 //
-//   - Relevant syntax tree types:
+//   - 関連する構文木:
 //     https://docs.rs/syn/1.0/syn/struct.Attribute.html
 //     https://docs.rs/syn/1.0/syn/enum.Meta.html
 //
-//   - Macro for applying a format string to some runtime value:
+//   - ランタイムな値に対してフォーマット文字列を適用するマクロ:
 //     https://doc.rust-lang.org/std/macro.format_args.html
 
 use derive_debug::CustomDebug;
